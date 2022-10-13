@@ -32,7 +32,7 @@ class AddScalar(TensorOp):
         return a + self.scalar
 
     def gradient(self, out_grad: Tensor, node: Tensor):
-        return out_grad
+        return (out_grad, )
 
 
 def add_scalar(a, scalar):
@@ -125,7 +125,7 @@ class Transpose(TensorOp):
             return numpy.swapaxes(a, -1, -2)
 
     def gradient(self, out_grad, node):
-        return transpose(out_grad, self.axes)
+        return [transpose(out_grad, self.axes)]
 
 
 def transpose(a, axes=None):
@@ -141,7 +141,7 @@ class Reshape(TensorOp):
 
     def gradient(self, out_grad, node):
         t, = node.inputs
-        return reshape(out_grad, t.shape)
+        return (reshape(out_grad, t.shape), )
 
 
 def reshape(a, shape):
@@ -170,7 +170,7 @@ class BroadcastTo(TensorOp):
 
     def gradient(self, out_grad, node):
         t = node.inputs[0]
-        return br_grad(out_grad, t.shape, self.shape)
+        return (br_grad(out_grad, t.shape, self.shape), )
 
 
 def broadcast_to(a, shape):
@@ -207,7 +207,7 @@ class Summation(TensorOp):
         for ax in transpositions:
             res = transpose(res, ax)
 
-        return res
+        return (res, )
 
 
 def summation(a, axes=None):
@@ -239,7 +239,7 @@ class Negate(TensorOp):
         return -a
 
     def gradient(self, out_grad, node):
-        return -out_grad
+        return [-out_grad]
 
 
 def negate(a):
